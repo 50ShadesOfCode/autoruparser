@@ -3,6 +3,7 @@ from flask.wrappers import Response
 app = Flask(__name__)
 import requests
 from bs4 import BeautifulSoup
+import json
 
 prefix = "https://auto.ru/cars/"
 
@@ -95,10 +96,8 @@ def modifyCarDesc(desc):
 
 @app.route('/getCardByUrl', methods=['GET', 'POST'])
 def getCardByUrl():
-  json = request.json
-  if (json['url'] == None):
-    return Response(status=404)
-  url = json['url']
+  rjson = request.json
+  url = rjson.get("url")
   HEADERS['Referer']=url
   r = requests.get(url)
   r.encoding = 'utf-8'
@@ -114,7 +113,7 @@ def getCardByUrl():
   image_urls = []
   for image in images:
     image_urls.append(image['src'])
-  return jsonify({
+  js = json.loads({
     "kmage": carKmage, 
     "engine": carEngine,
     "transmission": carTransmission,
@@ -123,6 +122,7 @@ def getCardByUrl():
     "body": carBody,
     "images_urls": image_urls,
   })
+  return js
 
 @app.route("/")
 def getHome():
