@@ -113,7 +113,7 @@ def getCardByUrl():
   image_urls = []
   for image in images:
     image_urls.append(image['src'])
-  js = json.loads({
+  return jsonify({
     "kmage": carKmage, 
     "engine": carEngine,
     "transmission": carTransmission,
@@ -122,7 +122,6 @@ def getCardByUrl():
     "body": carBody,
     "images_urls": image_urls,
   })
-  return js
 
 @app.route("/")
 def getHome():
