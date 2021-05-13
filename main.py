@@ -109,14 +109,11 @@ def getCarByUrl():
         "body": carBody,
         "images_urls": image_urls,
         "year": carYear,
-        "tax": carTax,
         "wheel": carWheel,
         "state": carState,
         "owners": carOwners,
         "pts": carPts,
         "customs": carCustoms,
-        "warranty": carWarranty,
-        "exchange": carExchange,
     })
 
 
