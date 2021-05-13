@@ -80,8 +80,6 @@ def getCarByUrl():
         'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
     carEngine = soup.find('li', {'class': 'CardInfoRow_engine'}).find(
         'div').text.replace(u'\xa0', ' ')
-    carTax = soup.find('li', {'class': 'CardInfoRow_transportTax'}).find_all(
-        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
     carTransmission = soup.find('li', {'class': 'CardInfoRow_transmission'}).find_all(
         'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
     carDrive = soup.find('li', {'class': 'CardInfoRow_drive'}).find_all(
@@ -95,10 +93,6 @@ def getCarByUrl():
     carPts = soup.find('li', {'class': 'CardInfoRow_pts'}).find_all(
         'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
     carCustoms = soup.find('li', {'class': 'CardInfoRow_customs'}).find_all(
-        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-    carWarranty = soup.find('li', {'class': 'CardInfoRow_warranty'}).find_all(
-        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-    carExchange = soup.find('li', {'class': 'CardInfoRow_exchange'}).find_all(
         'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
     images = soup.find_all('img', {'class': 'ImageGalleryDesktop__image'})
     image_urls = []
