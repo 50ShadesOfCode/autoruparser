@@ -115,6 +115,7 @@ def getCarByUrl():
         "pts": carPts,
         "customs": carCustoms,
         "desc":carDescription,
+        "chars":charsUrl,
     })
 
 
