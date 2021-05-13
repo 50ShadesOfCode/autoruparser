@@ -104,6 +104,7 @@ def getCarByUrl():
     image_urls = []
     for image in images:
         tmp = "http:" + image['src']
+        println(tmp)
         image_urls.append(tmp)
     return jsonify({
         "kmage": carKmage,
