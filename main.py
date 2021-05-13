@@ -103,7 +103,7 @@ def getCarByUrl():
     images = soup.find_all('img', {'class': 'ImageGalleryDesktop__image'})
     image_urls = []
     for image in images:
-        image_urls.append(image['src'])
+        image_urls.append(image['src'][2:])
     return jsonify({
         "kmage": carKmage,
         "engine": carEngine,
@@ -157,9 +157,7 @@ def getCardByUrl():
     image_urls = []
     for image in images:
         tmp = image['src']
-        tmp[0] = ''
-        tmp[0] = ''
-        image_urls.append(tmp)
+        image_urls.append(tmp[2:])
     return jsonify({
         "kmage": carKmage,
         "engine": carEngine,
