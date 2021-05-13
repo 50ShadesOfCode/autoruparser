@@ -103,7 +103,7 @@ def getCarByUrl():
     images = soup.find_all('img', {'class': 'ImageGalleryDesktop__image'})
     image_urls = []
     for image in images:
-        image_urls.append(image['src'][2:])
+        image_urls.append('http:'+image['src'])
     return jsonify({
         "kmage": carKmage,
         "engine": carEngine,
