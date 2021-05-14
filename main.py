@@ -48,16 +48,53 @@ paraminurl = {
     "price_to": "56464",
 }
 
-
+@app.route('/gtCarsByParams')
 def get_cars_by_params(params):
-    url = ""
+    url = prefix
+    model = request.json.get('model')
+    if model != None:
+        url = url + model + '/all/?'
+    else:
+        url = url + 'all/?'
+    bodytype = request.json.get('bodytype')
+    if bodytype != None:
+        url = url + 'body_type_group=' + bodytype + '&'
+    transmission = request.json.get('transmission')
+    if transmission != None:
+        url = url + 'transmission=' + transmission + '&'
+    year_from = request.json.get('year_from')
+    if year_from != None:
+        url = url + 'year_from=' + year_from + '&'
+    year_to = request.json.get('year_to')
+    if year_to != None:
+        url = url + 'year_to=' + year_to + '&'
+    gear_type = request.json.get('gear_type')
+    if gear_type != None:
+        url = url + 'gear_type=' + gear_type + '&'
+    km_age_from = request.json.get('km_age_from')
+    if km_age_from != None:
+        url = url + 'km_age_from=' + km_age_from + '&'
+    km_age_to = request.json.get('km_age_to')
+    if km_age_to != None:
+        url = url + 'km_age_to=' + km_age_to + '&'
+    displacement_from = request.json.get('displacement_from')
+    if displacement_from != None:
+        url = url + 'displacement_from=' + displacement_from + '&'
+    displacement_to = request.json.get('displacement_to')
+    if displacement_to != None:
+        url = url + 'displacement_to=' + displacement_to + '&'
+    price_from = request.json.get('price_from')
+    if price_from != None:
+        url = url + 'price_from=' + price_from + '&'
+    price_to = request.json.get('price_to')
+    if price_to != None:
+        url = url + 'price_to=' + price_to + '&'
     r = requests.get(url)
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'html.parser')
     soup.prettify()
     app = soup.find('div', {'id': 'app'})
-    return app.find_all('div', {'class': 'ListingItem-module__main'})
-
+    return print(app.find_all('div', {'class': 'ListingItem-module__main'}))
 
 @app.route('/getCarByUrl', methods=['GET', 'POST'])
 def getCarByUrl():
@@ -177,7 +214,90 @@ def getCarCharsByUrl():
     groups = soup.find_all('div', {'class':'catalog__details-group'})
     for group in groups:
       group.prettify()
-    return str(groups)
+    carCountry = groups[0].find('dd', {'class': 'list-values__value'})[0].text.replace(u'\xa0', ' ')
+    carClass = groups[0].find('dd', {'class': 'list-values__value'})[1].text.replace(u'\xa0', ' ')
+    carDoors = groups[0].find('dd', {'class': 'list-values__value'})[2].text.replace(u'\xa0', ' ')
+    carPlaces = groups[0].find('dd', {'class': 'list-values__value'})[3].text.replace(u'\xa0', ' ')
+
+    carLength = groups[1].find('dd', {'class': 'list-values__value'})[0].text.replace(u'\xa0', ' ')
+    carWidth = groups[1].find('dd', {'class': 'list-values__value'})[1].text.replace(u'\xa0', ' ')
+    carHeight = groups[1].find('dd', {'class': 'list-values__value'})[2].text.replace(u'\xa0', ' ')
+    carBase = groups[1].find('dd', {'class': 'list-values__value'})[3].text.replace(u'\xa0', ' ')
+    carClirense = groups[1].find('dd', {'class': 'list-values__value'})[4].text.replace(u'\xa0', ' ')
+    carFrWidth = groups[1].find('dd', {'class': 'list-values__value'})[5].text.replace(u'\xa0', ' ')
+    carBackWidth = groups[1].find('dd', {'class': 'list-values__value'})[6].text.replace(u'\xa0', ' ')
+
+    carBackVolume = groups[2].find('dd', {'class': 'list-values__value'})[0].text.replace(u'\xa0', ' ')
+    carFuelVolume = groups[2].find('dd', {'class': 'list-values__value'})[1].text.replace(u'\xa0', ' ')
+
+    carTransmission = groups[3].find('dd', {'class': 'list-values__value'})[0].text.replace(u'\xa0', ' ')
+    carNumberTrans = groups[3].find('dd', {'class': 'list-values__value'})[1].text.replace(u'\xa0', ' ')
+    carPrivod = groups[3].find('dd', {'class': 'list-values__value'})[2].text.replace(u'\xa0', ' ')   
+
+    carFrSusp = groups[4].find('dd', {'class': 'list-values__value'})[0].text.replace(u'\xa0', ' ')     
+    carBackSusp = groups[4].find('dd', {'class': 'list-values__value'})[1].text.replace(u'\xa0', ' ')    
+    carFrBrakes = groups[4].find('dd', {'class': 'list-values__value'})[2].text.replace(u'\xa0', ' ')    
+    carBackBrakes = groups[4].find('dd', {'class': 'list-values__value'})[3].text.replace(u'\xa0', ' ')   
+
+    carMaxSpeed = groups[5].find('dd', {'class': 'list-values__value'})[0].text.replace(u'\xa0', ' ')
+    carRacing = groups[5].find('dd', {'class': 'list-values__value'})[1].text.replace(u'\xa0', ' ')
+    carWaste = groups[5].find('dd', {'class': 'list-values__value'})[2].text.replace(u'\xa0', ' ')
+    carFuelMark = groups[5].find('dd', {'class': 'list-values__value'})[3].text.replace(u'\xa0', ' ')
+    carEcoClass = groups[5].find('dd', {'class': 'list-values__value'})[4].text.replace(u'\xa0', ' ')
+    carCo2 = groups[5].find('dd', {'class': 'list-values__value'})[5].text.replace(u'\xa0', ' ')
+    
+    carEngType = groups[6].find('dd', {'class': 'list-values__value'})[0].text.replace(u'\xa0', ' ')
+    carEngPos = groups[6].find('dd', {'class': 'list-values__value'})[1].text.replace(u'\xa0', ' ')
+    carEngVolume = groups[6].find('dd', {'class': 'list-values__value'})[2].text.replace(u'\xa0', ' ')
+    carBoost = groups[6].find('dd', {'class': 'list-values__value'})[3].text.replace(u'\xa0', ' ')
+    carMaxPower = groups[6].find('dd', {'class': 'list-values__value'})[4].text.replace(u'\xa0', ' ')
+    carMaxTurn = groups[6].find('dd', {'class': 'list-values__value'})[5].text.replace(u'\xa0', ' ')
+    carCylPos = groups[6].find('dd', {'class': 'list-values__value'})[6].text.replace(u'\xa0', ' ')
+    carCylNum = groups[6].find('dd', {'class': 'list-values__value'})[7].text.replace(u'\xa0', ' ')
+    carClapNum = groups[6].find('dd', {'class': 'list-values__value'})[8].text.replace(u'\xa0', ' ')
+    carFeedSystem = groups[6].find('dd', {'class': 'list-values__value'})[9].text.replace(u'\xa0', ' ')
+    carPressure = groups[6].find('dd', {'class': 'list-values__value'})[10].text.replace(u'\xa0', ' ')
+    carDiameter = groups[6].find('dd', {'class': 'list-values__value'})[11].text.replace(u'\xa0', ' ')
+    return jsonify({
+        "country":carCountry,
+        "class":carClass,
+        "doors":carDoors,
+        "places":carPlaces,
+        "length": carLength,
+        "width":carWidth,
+        "height":carHeight,
+        "base":carBase,
+        "clirense":carClirense,
+        "frwidth":carFrWidth,
+        "backwidth":carBackWidth,
+        "backvolume":carBackVolume,
+        "fuelvolume":carFuelVolume,
+        "traansmission":carTransmission,
+        "numberTrans":carNumberTrans,
+        "privod":carPrivod,
+        "frsusp":carFrSusp,
+        "backsusp":carBackSusp,
+        "frbrakes": carFrBrakes,
+        "backbrakes":carBackBrakes,
+        "maxspeed":carMaxSpeed,
+        "racing":carRacing,
+        "waste":carWaste,
+        "fuelmark":carFuelMark,
+        "ecoclass":carEcoClass,
+        "co2":carCo2,
+        "engtype":carEngType,
+        "engpos":carEngPos,
+        "engvolume":carEngVolume,
+        "boost":carBoost,
+        "maxpower":carMaxPower,
+        "maxturn":carMaxTurn,
+        "cylpos":carCylPos,
+        "cylnum":carCylNum,
+        "clapnum":carClapNum,
+        "feedsystem":carFeedSystem,
+        "pressure":carPressure,
+        "diameter":carDiameter,
+    })
 
 
 
