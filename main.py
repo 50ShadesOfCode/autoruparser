@@ -48,7 +48,7 @@ paraminurl = {
     "price_to": "56464",
 }
 
-@app.route('/makePage/Url')
+@app.route('/makePageUrl')
 def make_page_url():
     url = prefix
     model = request.json.get('model')
