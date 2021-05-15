@@ -48,7 +48,7 @@ paraminurl = {
     "price_to": "56464",
 }
 
-@app.route('/makePageUrl')
+@app.route('/makePageUrl', methods=['GET', 'POST'])
 def make_page_url():
     url = prefix
     model = request.json.get('model')
@@ -91,7 +91,7 @@ def make_page_url():
         url = url + 'price_to=' + price_to + '&'
     return jsonify({"url":url})
 
-@app.route('/getCarsByParams')
+@app.route('/getCarsByParams', methods=['GET', 'POST'])
 def get_cars_by_params():
     r = requests.get(request.json.get("url"))
     r.encoding = 'utf-8'
