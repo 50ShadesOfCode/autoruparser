@@ -56,7 +56,7 @@ def make_page_url():
         url = url + mark + '/all/?'
     else:
         url = url + 'all/?'
-    bodytype = request.json.get('bodytype')
+    bodytype = request.json.get('body')
     if bodytype != None:
         url = url + 'body_type_group=' + bodytype + '&'
     transmission = request.json.get('transmission')
