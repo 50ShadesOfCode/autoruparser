@@ -51,9 +51,9 @@ paraminurl = {
 @app.route('/makePageUrl', methods=['GET', 'POST'])
 def make_page_url():
     url = prefix
-    model = request.json.get('model')
-    if model != None:
-        url = url + model + '/all/?'
+    mark = request.json.get('mark')
+    if mark != "":
+        url = url + mark + '/all/?'
     else:
         url = url + 'all/?'
     bodytype = request.json.get('bodytype')
