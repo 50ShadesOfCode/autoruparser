@@ -98,7 +98,10 @@ def get_cars_by_params():
     soup = BeautifulSoup(r.text, 'html.parser')
     soup.prettify()
     app = soup.find('div', {'id': 'app'})
-    return jsonify({"urls": app.find_all('a', {'class': 'Link ListingItemTitle-module__link'})['href']})
+    car_urls = []
+    for a in app.find_all('a', {'class': 'Link ListingItemTitle-module__link'}):
+        car_urls.append(a['href'])
+    return jsonify({"urls": car_urls})
 
 @app.route('/getCarByUrl', methods=['GET', 'POST'])
 def getCarByUrl():
