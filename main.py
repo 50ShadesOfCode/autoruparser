@@ -48,8 +48,8 @@ paraminurl = {
     "price_to": "56464",
 }
 
-@app.route('/gtCarsByParams')
-def get_cars_by_params(params):
+@app.route('/makePage/Url')
+def make_page_url():
     url = prefix
     model = request.json.get('model')
     if model != None:
@@ -89,12 +89,16 @@ def get_cars_by_params(params):
     price_to = request.json.get('price_to')
     if price_to != None:
         url = url + 'price_to=' + price_to + '&'
-    r = requests.get(url)
+    return url
+
+@app.route('/getCarsByParams')
+def get_cars_by_params():
+    r = requests.get(request.json.get("url"))
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'html.parser')
     soup.prettify()
     app = soup.find('div', {'id': 'app'})
-    return print(app.find_all('div', {'class': 'ListingItem-module__main'}))
+    return app.find_all('a', {'class': 'Link ListingItemTitle-module__link'})['href']
 
 @app.route('/getCarByUrl', methods=['GET', 'POST'])
 def getCarByUrl():
