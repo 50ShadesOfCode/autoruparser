@@ -89,7 +89,7 @@ def make_page_url():
     price_to = request.json.get('price_to')
     if price_to != None:
         url = url + 'price_to=' + price_to + '&'
-    return url
+    return jsonify({"url":url})
 
 @app.route('/getCarsByParams')
 def get_cars_by_params():
@@ -98,7 +98,7 @@ def get_cars_by_params():
     soup = BeautifulSoup(r.text, 'html.parser')
     soup.prettify()
     app = soup.find('div', {'id': 'app'})
-    return app.find_all('a', {'class': 'Link ListingItemTitle-module__link'})['href']
+    return jsonify({"urls": app.find_all('a', {'class': 'Link ListingItemTitle-module__link'})['href']})
 
 @app.route('/getCarByUrl', methods=['GET', 'POST'])
 def getCarByUrl():
