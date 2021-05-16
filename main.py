@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 from flask import Flask, jsonify, request
 from flask.wrappers import Response
-app = Flask(__name__)
+application = Flask(__name__)
 
 prefix = "https://auto.ru/cars/"
 
@@ -48,7 +48,7 @@ paraminurl = {
     "price_to": "56464",
 }
 
-@app.route('/makePageUrl', methods=['GET', 'POST'])
+@application.route('/makePageUrl', methods=['GET', 'POST'])
 def make_page_url():
     url = prefix
     mark = request.json.get('mark')
@@ -91,7 +91,7 @@ def make_page_url():
         url = url + 'price_to=' + price_to + '&'
     return jsonify({"url":url})
 
-@app.route('/getCarsByParams', methods=['GET', 'POST'])
+@application.route('/getCarsByParams', methods=['GET', 'POST'])
 def get_cars_by_params():
     r = requests.get(request.json.get("url"))
     r.encoding = 'utf-8'
@@ -103,7 +103,7 @@ def get_cars_by_params():
         car_urls.append(a['href'])
     return jsonify({"urls": car_urls})
 
-@app.route('/getCarByUrl', methods=['GET', 'POST'])
+@application.route('/getCarByUrl', methods=['GET', 'POST'])
 def getCarByUrl():
     r = requests.get(request.json.get('url'))
     r.encoding = 'utf-8'
@@ -171,7 +171,7 @@ def modifyCarDesc(desc):
     return desc
 
 
-@app.route('/getCardByUrl', methods=['GET', 'POST'])
+@application.route('/getCardByUrl', methods=['GET', 'POST'])
 def getCardByUrl():
     rjson = request.json
     url = rjson.get("url")
@@ -208,11 +208,11 @@ def getCardByUrl():
     })
 
 
-@app.route("/")
+@application.route("/")
 def getHome():
     return "ads"
 
-@app.route('/getCharsByUrl', methods=['GET', 'POST'])
+@application.route('/getCharsByUrl', methods=['GET', 'POST'])
 def getCarCharsByUrl():
     r = requests.get(request.json.get('url'))
     r.encoding = 'utf-8'
@@ -309,6 +309,5 @@ def getCarCharsByUrl():
 
 
 if __name__ == '__main__':
-    app.debug = True
-    app.run(host='0.0.0.0')
+    application.run(host='0.0.0.0')
     # print(getCardByUrl('https://auto.ru/cars/used/sale/mercedes/gle_klasse_coupe/1103168273-6ac4b173/'))
