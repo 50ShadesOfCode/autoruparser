@@ -17,7 +17,7 @@ def get_cars_by_params():
     soup.prettify()
     app = soup.find('div', {'id': 'app'})
     car_urls = []
-    for a in app.find_all('a', {'class': 'Link ListingItemTitle-module__link'}):
+    for a in app.find_all('a', {'class': 'Link OfferThumb'}):
         car_urls.append(a['href'])
     return jsonify({"urls": car_urls})
 
