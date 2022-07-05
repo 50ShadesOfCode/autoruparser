@@ -1,0 +1,5 @@
+beautifulsoup4==4.10.0
+Flask==2.1.1
+requests==2.27.1
+requests-toolbelt==0.9.1
+coverage==6.4.1
