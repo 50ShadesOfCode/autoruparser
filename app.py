@@ -19,6 +19,7 @@ def get_cars_by_params():
     car_urls = []
     for a in app.find_all('a', {'class': 'Link OfferThumb'}):
         car_urls.append(a['href'])
+    print(app.find_all('a', {'class': 'Link OfferThumb'}))
     return jsonify({"urls": car_urls})
 
 #получает данные о автомобиле в зависимости от того какой он, новый или подержаный
