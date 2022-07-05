@@ -4,6 +4,10 @@ from flask import Flask, jsonify, request#сам сервер
 from flask.wrappers import Response
 app = Flask(__name__)
 
+@app.route('/', methods=['GET'])
+def home():
+    return 'Homepage'
+
 #получает все автомобили с заданными параметрами
 @app.route('/getCarsByParams', methods=['GET', 'POST'])
 def get_cars_by_params():
