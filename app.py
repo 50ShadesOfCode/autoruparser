@@ -173,7 +173,7 @@ def getCardByUrl():
     soup = BeautifulSoup(r.text, 'html.parser')
     soup.prettify()
     if str(url).find("/new/") == -1:
-        name = soup.find('div', {'class':'CardSidebarActions__title'})
+        name = soup.find('h1', {'class':'CardHead__title'})
         carName = "Нет названия"
         if name != None:
             carName = name.text.replace(u'\xa0', ' ')
@@ -181,7 +181,7 @@ def getCardByUrl():
         carPrice = "Нет цены"
         if price != None:
             carPrice = price.text.replace(u'\xa0', ' ')
-        carKmage = soup.find('li', {'class': 'CardInfoRow_kmAge'}).find_all(
+        carKmage = soup.find('div', {'class':'CardOfferBody__leftColumn'}).find('li', {'class': 'CardInfoRow CardInfoRow_kmAge'}).find_all(
             'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
         carEngine = soup.find('li', {'class': 'CardInfoRow_engine'}).find(
             'div').text.replace(u'\xa0', ' ')
@@ -211,7 +211,7 @@ def getCardByUrl():
             "images_urls": image_urls,
         })
     else:
-        name = soup.find('div', {'class':'CardSidebarActions__title'})
+        name = soup.find('span', {'class':'CardHead__title'})
         carName = "Нет названия"
         if name != None:
             carName = name.text.replace(u'\xa0', ' ')
