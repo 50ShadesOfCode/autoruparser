@@ -2,7 +2,9 @@ from bs4 import BeautifulSoup #библиотека парсера
 import requests#http запросы
 from flask import Flask, jsonify, request#сам сервер
 from flask.wrappers import Response
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/', methods=['GET'])
 def home():
