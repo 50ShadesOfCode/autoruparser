@@ -1,13 +1,18 @@
+from werkzeug.middleware.profiler import ProfilerMiddleware
 from bs4 import BeautifulSoup #библиотека парсера
 import requests#http запросы
 from flask import Flask, jsonify, request#сам сервер
 from flask.wrappers import Response
 from flask_cors import CORS
+import lxml
+import cchardet
 import logging
 app = Flask(__name__)
 CORS(app)
 logging.getLogger('flask_cors').level = logging.DEBUG
+#app.wsgi_app = ProfilerMiddleware(app.wsgi_app, profile_dir='./profile')
 
+session = requests.Session()
 
 @app.route('/', methods=['GET'])
 def home():
@@ -16,9 +21,9 @@ def home():
 #получает все автомобили с заданными параметрами
 @app.route('/getCarsByParams', methods=['GET', 'POST'])
 def get_cars_by_params():
-    r = requests.get(request.json.get("url"))
+    r = session.get(request.json.get("url"))
     r.encoding = 'utf-8'
-    soup = BeautifulSoup(r.text, 'html.parser')
+    soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
     app = soup.find('div', {'id': 'app'})
     car_urls = []
@@ -29,9 +34,9 @@ def get_cars_by_params():
 #получает данные о автомобиле в зависимости от того какой он, новый или подержаный
 @app.route('/getCarByUrl', methods=['GET', 'POST'])
 def getCarByUrl():
-    r = requests.get(request.json.get('url'))
+    r = session.get(request.json.get('url'))
     r.encoding = 'utf-8'
-    soup = BeautifulSoup(r.text, 'html.parser')
+    soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
     if (str(request.json.get('url'))).find("/new/") == -1:
         charsUrl = soup.find(
@@ -150,7 +155,7 @@ def getNotUpdate():
     url = request.json.get("url")
     r = requests.get(url)
     r.encoding = 'utf-8'
-    soup = BeautifulSoup(r.text, 'html.parser')
+    soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
     t = soup.find('button', {'class':'Button Button_color_blue Button_size_m Button_type_button Button_width_full'})
     if (t == None):
@@ -172,7 +177,7 @@ def getCardByUrl():
     url = request.json.get("url")
     r = requests.get(url)
     r.encoding = 'utf-8'
-    soup = BeautifulSoup(r.text, 'html.parser')
+    soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
     if str(url).find("/new/") == -1:
         name = soup.find('h1', {'class':'CardHead__title'})
@@ -257,12 +262,14 @@ def getCardByUrl():
 def getCarCharsByUrl():
     r = requests.get(request.json.get('url'))
     r.encoding = 'utf-8'
-    soup = BeautifulSoup(r.text, 'html.parser')
+    soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
     traits = soup.find_all('dt', {'class': 'list-values__label'})
     vals = soup.find_all('dd', {'class': 'list-values__value'})
     res = {str(traits[a].text): str(vals[a].text) for a in range(len(traits))}
     return jsonify(res)
+
+
 
 #главная функция приложения
 if __name__ == '__main__':
