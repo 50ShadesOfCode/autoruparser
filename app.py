@@ -1,12 +1,22 @@
 from bs4 import BeautifulSoup #библиотека парсера
-import requests#http запросы
+from requests_futures.sessions import FuturesSession
 from flask import Flask, jsonify, request#сам сервер
 from flask.wrappers import Response
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 import lxml
 import cchardet
 import logging
+import ujson as json
+from flask.json import JSONEncoder
+class CustomJSONEncoder(JSONEncoder):
+    def default(self, obj):
+        try:
+            return json.dumps(obj)
+        except TypeError:
+            return JSONEncoder.default(self, obj)
 app = Flask(__name__)
+app.json_encoder = CustomJSONEncoder
+
 CORS(app)
 cors = CORS(app, resource={
     r"/*":{
@@ -16,17 +26,15 @@ cors = CORS(app, resource={
 logging.getLogger('flask_cors').level = logging.DEBUG
 #app.wsgi_app = ProfilerMiddleware(app.wsgi_app, profile_dir='./profile')
 
-session = requests.Session()
+session = FuturesSession()
 
 @app.route('/', methods=['GET'])
-@cross_origin()
-def home():
+async def home():
     return 'Homepage'
 
 #получает все автомобили с заданными параметрами
 @app.route('/getCarsByParams', methods=['GET', 'POST'])
-@cross_origin()
-def get_cars_by_params():
+async def get_cars_by_params():
     r = session.get(request.json.get("url"))
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'lxml')
@@ -39,8 +47,7 @@ def get_cars_by_params():
 
 #получает данные о автомобиле в зависимости от того какой он, новый или подержаный
 @app.route('/getCarByUrl', methods=['GET', 'POST'])
-@cross_origin()
-def getCarByUrl():
+async def getCarByUrl():
     url = request.json.get('url')
     r = session.get(url)
     r.encoding = 'utf-8'
@@ -130,8 +137,7 @@ def getCarByUrl():
 
 #получает число автомобилей с заданными параметрами
 @app.route('/getNotUpdate', methods=['GET', 'POST'])
-@cross_origin()
-def getNotUpdate():
+async def getNotUpdate():
     url = request.json.get("url")
     r = session.get(url)
     r.encoding = 'utf-8'
@@ -153,8 +159,7 @@ def modifyCarDesc(desc):
 
 #получает данные о карточке по ссылке
 @app.route('/getCardByUrl', methods=['GET', 'POST'])
-@cross_origin()
-def getCardByUrl():
+async def getCardByUrl():
     url = request.json.get("url")
     r = session.get(url)
     r.encoding = 'utf-8'
@@ -215,8 +220,7 @@ def getCardByUrl():
 
 #получает все характеристики автомобиля и преобразовавывает их в JSON
 @app.route('/getCharsByUrl', methods=['GET', 'POST'])
-@cross_origin()
-def getCarCharsByUrl():
+async def getCarCharsByUrl():
     r = session.get(request.json.get('url'))
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'lxml')
@@ -227,7 +231,5 @@ def getCarCharsByUrl():
     return jsonify(res)
 
 
-
-#главная функция приложения
 if __name__ == '__main__':
     app.run(threaded=True, host='0.0.0.0')
