@@ -29,12 +29,12 @@ logging.getLogger('flask_cors').level = logging.DEBUG
 session = FuturesSession()
 
 @app.route('/', methods=['GET'])
-async def home():
+def home():
     return 'Homepage'
 
 #получает все автомобили с заданными параметрами
 @app.route('/getCarsByParams', methods=['GET', 'POST'])
-async def get_cars_by_params():
+def get_cars_by_params():
     r = session.get(request.json.get("url"))
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'lxml')
@@ -47,7 +47,7 @@ async def get_cars_by_params():
 
 #получает данные о автомобиле в зависимости от того какой он, новый или подержаный
 @app.route('/getCarByUrl', methods=['GET', 'POST'])
-async def getCarByUrl():
+def getCarByUrl():
     url = request.json.get('url')
     r = session.get(url)
     r.encoding = 'utf-8'
@@ -137,7 +137,7 @@ async def getCarByUrl():
 
 #получает число автомобилей с заданными параметрами
 @app.route('/getNotUpdate', methods=['GET', 'POST'])
-async def getNotUpdate():
+def getNotUpdate():
     url = request.json.get("url")
     r = session.get(url)
     r.encoding = 'utf-8'
@@ -159,7 +159,7 @@ def modifyCarDesc(desc):
 
 #получает данные о карточке по ссылке
 @app.route('/getCardByUrl', methods=['GET', 'POST'])
-async def getCardByUrl():
+def getCardByUrl():
     url = request.json.get("url")
     r = session.get(url)
     r.encoding = 'utf-8'
@@ -220,7 +220,7 @@ async def getCardByUrl():
 
 #получает все характеристики автомобиля и преобразовавывает их в JSON
 @app.route('/getCharsByUrl', methods=['GET', 'POST'])
-async def getCarCharsByUrl():
+def getCarCharsByUrl():
     r = session.get(request.json.get('url'))
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'lxml')
