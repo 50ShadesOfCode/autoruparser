@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup #библиотека парсера
-from requests_futures.sessions import FuturesSession
+from requests import Session
 from flask import Flask, jsonify, request#сам сервер
 from flask.wrappers import Response
 from flask_cors import CORS
@@ -26,7 +26,7 @@ cors = CORS(app, resource={
 logging.getLogger('flask_cors').level = logging.DEBUG
 #app.wsgi_app = ProfilerMiddleware(app.wsgi_app, profile_dir='./profile')
 
-session = FuturesSession()
+session = Session()
 
 @app.route('/', methods=['GET'])
 def home():
