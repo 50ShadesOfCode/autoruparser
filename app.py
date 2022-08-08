@@ -41,37 +41,43 @@ def get_cars_by_params():
 @app.route('/getCarByUrl', methods=['GET', 'POST'])
 @cross_origin()
 def getCarByUrl():
-    r = session.get(request.json.get('url'))
+    url = request.json.get('url')
+    r = session.get(url)
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
-    if (str(request.json.get('url'))).find("/new/") == -1:
-        charsUrl = soup.find(
-            'a', {'class': 'Link SpoilerLink CardCatalogLink SpoilerLink_type_default'})['href']
-        carDescription = soup.find(
-            'div', {'class': 'CardDescription__textInner'}).text
-        carDescription = modifyCarDesc(carDescription)
+    name = soup.find('div', {'class': 'CardSidebarActions__title'})
+    carName = "Нет названия"
+    if name != None:
+        carName = name.text.replace(u'\xa0', ' ')
+    charsUrl = soup.find(
+        'a', {'class': 'Link SpoilerLink CardCatalogLink SpoilerLink_type_default'})['href']
+    carDescription = soup.find(
+        'div', {'class': 'CardDescription__textInner'}).text
+    price = soup.find('span', {'class': 'OfferPriceCaption__price'})
+    carPrice = "Нет цены"
+    if price != None:
+        carPrice = price.text.replace(u'\xa0', ' ')
+    carDescription = modifyCarDesc(carDescription)
+    carBody = soup.find('li', {'class': 'CardInfoRow_bodytype'}).find_all(
+        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+    carEngine = soup.find('li', {'class': 'CardInfoRow_engine'}).find(
+        'div').text.replace(u'\xa0', ' ')
+    carTransmission = soup.find('li', {'class': 'CardInfoRow_transmission'}).find_all(
+        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+    carColor = soup.find('li', {'class': 'CardInfoRow_color'}).find_all(
+        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+    carDrive = soup.find('li', {'class': 'CardInfoRow_drive'}).find_all(
+        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+    images = soup.find_all('img', {'class': 'ImageGalleryDesktop__image'})
+    image_urls = []
+    for image in images:
+        tmp = "http:" + image['src']
+        image_urls.append(tmp)
+    if str(url).find("/new/") == -1: 
         carYear = soup.find('li', {'class': 'CardInfoRow_year'}).find(
             'a', {'class': 'Link'}).text
         carKmage = soup.find('li', {'class': 'CardInfoRow_kmAge'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-        name = soup.find('div', {'class':'CardSidebarActions__title'})
-        carName = "Нет названия"
-        if name != None:
-            carName = name.text.replace(u'\xa0', ' ')
-        price = soup.find('span', {'class':'OfferPriceCaption__price'})
-        carPrice = "Нет цены"
-        if price != None:
-            carPrice = price.text.replace(u'\xa0', ' ')
-        carBody = soup.find('li', {'class': 'CardInfoRow_bodytype'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-        carColor = soup.find('li', {'class': 'CardInfoRow_color'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-        carEngine = soup.find('li', {'class': 'CardInfoRow_engine'}).find(
-            'div').text.replace(u'\xa0', ' ')
-        carTransmission = soup.find('li', {'class': 'CardInfoRow_transmission'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-        carDrive = soup.find('li', {'class': 'CardInfoRow_drive'}).find_all(
             'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
         carWheel = soup.find('li', {'class': 'CardInfoRow_wheel'}).find_all(
             'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
@@ -83,12 +89,6 @@ def getCarByUrl():
             'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
         carCustoms = soup.find('li', {'class': 'CardInfoRow_customs'}).find_all(
             'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-        images = soup.find_all('img', {'class': 'ImageGalleryDesktop__image'})
-        #создаем массив ссылок на картинки
-        image_urls = []
-        for image in images:
-            tmp = "http:" + image['src']
-            image_urls.append(tmp)
         return jsonify({
             "name":carName,
             "price":carPrice,
@@ -109,38 +109,10 @@ def getCarByUrl():
             "chars":charsUrl,
         })
     else:
-        name = soup.find('div', {'class':'CardSidebarActions__title'})
-        carName = "Нет названия"
-        if name != None:
-            carName = name.text.replace(u'\xa0', ' ')
-        price = soup.find('span', {'class':'OfferPriceCaption__price'})
-        carPrice = "Нет цены"
-        if price != None:
-            carPrice = price.text.replace(u'\xa0', ' ')
-        charsUrl = soup.find(
-            'a', {'class': 'Link SpoilerLink CardCatalogLink SpoilerLink_type_default'})['href']
-        carBody = soup.find('li', {'class': 'CardInfoGrouped__row_bodytype'}).find(
-            'a', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')
         carComplectation = soup.find('li', {'class': 'CardInfoGrouped__row_complectation_name'}).find(
             'div', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')
-        carEngine = soup.find('li', {'class': 'CardInfoGrouped__row_engine'}).find_all(
-            'div')[2].text.replace(u'\xa0', ' ')
         carTax = soup.find('li', {'class': 'CardInfoGrouped__row_transportTax'}).find(
             'div', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')
-        carTransmission = soup.find('li', {'class': 'CardInfoGrouped__row_transmission'}).find(
-            'div', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')
-        carDrive = soup.find('li', {'class': 'CardInfoGrouped__row_drive'}).find(
-            'div', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')
-        carColor = soup.find('li', {'class': 'CardInfoGrouped__row_color'}).find(
-            'a', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')
-        carDescription = soup.find(
-            'div', {'class': 'CardDescription__textInner'}).text
-        carDescription = modifyCarDesc(carDescription)   
-        images = soup.find_all('img', {'class': 'ImageGalleryDesktop__image'})
-        image_urls = []
-        for image in images:
-            tmp = "http:" + image['src']
-            image_urls.append(tmp)
         return jsonify({
             "name": carName,
             "price":carPrice,
@@ -161,7 +133,7 @@ def getCarByUrl():
 @cross_origin()
 def getNotUpdate():
     url = request.json.get("url")
-    r = requests.get(url)
+    r = session.get(url)
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
@@ -184,36 +156,36 @@ def modifyCarDesc(desc):
 @cross_origin()
 def getCardByUrl():
     url = request.json.get("url")
-    r = requests.get(url)
+    r = session.get(url)
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
+    name = soup.find('h1', {'class': 'CardHead__title'})
+    carName = "Нет названия"
+    if name != None:
+        carName = name.text.replace(u'\xa0', ' ')
+    price = soup.find('span', {'class': 'OfferPriceCaption__price'})
+    carPrice = "Нет цены"
+    if price != None:
+        carPrice = price.text.replace(u'\xa0', ' ')
+    carEngine = soup.find('li', {'class': 'CardInfoRow_engine'}).find(
+        'div').text.replace(u'\xa0', ' ')
+    carTransmission = soup.find('li', {'class': 'CardInfoRow_transmission'}).find_all(
+        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+    carColor = soup.find('li', {'class': 'CardInfoRow_color'}).find_all(
+        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+    carDrive = soup.find('li', {'class': 'CardInfoRow_drive'}).find_all(
+        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+    carBody = soup.find('li', {'class': 'CardInfoRow_bodytype'}).find_all(
+        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+    images = soup.find_all('img', {'class': 'ImageGalleryDesktop__image'})
+    image_urls = []
+    for image in images:
+        tmp = image['src']
+        image_urls.append(tmp[2:])
     if str(url).find("/new/") == -1:
-        name = soup.find('h1', {'class':'CardHead__title'})
-        carName = "Нет названия"
-        if name != None:
-            carName = name.text.replace(u'\xa0', ' ')
-        price = soup.find('span', {'class':'OfferPriceCaption__price'})
-        carPrice = "Нет цены"
-        if price != None:
-            carPrice = price.text.replace(u'\xa0', ' ')
         carKmage = soup.find('div', {'class':'CardOfferBody__leftColumn'}).find('li', {'class': 'CardInfoRow CardInfoRow_kmAge'}).find_all(
             'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-        carEngine = soup.find('li', {'class': 'CardInfoRow_engine'}).find(
-            'div').text.replace(u'\xa0', ' ')
-        carTransmission = soup.find('li', {'class': 'CardInfoRow_transmission'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-        carColor = soup.find('li', {'class': 'CardInfoRow_color'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-        carDrive = soup.find('li', {'class': 'CardInfoRow_drive'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-        carBody = soup.find('li', {'class': 'CardInfoRow_bodytype'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-        images = soup.find_all('img', {'class': 'ImageGalleryDesktop__image'})
-        image_urls = []
-        for image in images:
-            tmp = image['src']
-            image_urls.append(tmp[2:])
         return jsonify({
             "name":carName,
             "kmage": carKmage,
@@ -227,33 +199,8 @@ def getCardByUrl():
             "images_urls": image_urls,
         })
     else:
-        name = soup.find('span', {'class':'CardHead__title'})
-        carName = "Нет названия"
-        if name != None:
-            carName = name.text.replace(u'\xa0', ' ')
-        price = soup.find('span', {'class':'OfferPriceCaption__price'})
-        carPrice = "Нет цены"
-        if price != None:
-            carPrice = price.text.replace(u'\xa0', ' ')
-        carBody = soup.find('li', {'class': 'CardInfoGrouped__row_bodytype'}).find(
-            'a', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')
         carComplectation = soup.find('li', {'class': 'CardInfoGrouped__row_complectation_name'}).find(
             'div', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')
-        carEngine = soup.find('li', {'class': 'CardInfoGrouped__row_engine'}).find_all(
-            'div')[2].text.replace(u'\xa0', ' ')
-        carTax = soup.find('li', {'class': 'CardInfoGrouped__row_transportTax'}).find(
-            'div', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')
-        carTransmission = soup.find('li', {'class': 'CardInfoGrouped__row_transmission'}).find(
-            'div', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')
-        carDrive = soup.find('li', {'class': 'CardInfoGrouped__row_drive'}).find(
-            'div', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')
-        carColor = soup.find('li', {'class': 'CardInfoGrouped__row_color'}).find(
-            'a', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')    
-        images = soup.find_all('img', {'class': 'ImageGalleryDesktop__image'})
-        image_urls = []
-        for image in images:
-            tmp = image['src']
-            image_urls.append(tmp[2:])
         return jsonify({
             "name":carName,
             "engine": carEngine,
@@ -270,7 +217,7 @@ def getCardByUrl():
 @app.route('/getCharsByUrl', methods=['GET', 'POST'])
 @cross_origin()
 def getCarCharsByUrl():
-    r = requests.get(request.json.get('url'))
+    r = session.get(request.json.get('url'))
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
