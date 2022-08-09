@@ -1,41 +1,39 @@
 from bs4 import BeautifulSoup #библиотека парсера
-from requests import Session
-from flask import Flask, jsonify, request#сам сервер
-from flask.wrappers import Response
-from flask_cors import CORS
+from requests_futures.sessions import FuturesSession
+from quart import Quart, request, jsonify
+from quart.wrappers import Response
+from quart_cors import cors
 import lxml
 import cchardet
 import logging
-import ujson as json
-from flask.json import JSONEncoder
-class CustomJSONEncoder(JSONEncoder):
-    def default(self, obj):
-        try:
-            return json.dumps(obj)
-        except TypeError:
-            return JSONEncoder.default(self, obj)
-app = Flask(__name__)
-app.json_encoder = CustomJSONEncoder
 
-CORS(app)
-cors = CORS(app, resource={
-    r"/*":{
-        "origins":"*"
-    }
-})
+app = Quart(__name__)
+app = cors(app, allow_origin="*")
+
 logging.getLogger('flask_cors').level = logging.DEBUG
 #app.wsgi_app = ProfilerMiddleware(app.wsgi_app, profile_dir='./profile')
 
-session = Session()
+session = FuturesSession()
 
 @app.route('/', methods=['GET'])
-def home():
+async def home():
+    r = session.get('https://auto.ru/cars/bmw/all/').result()
+    r.encoding = 'utf-8'
+    soup = BeautifulSoup(r.text, 'lxml')
+    soup.prettify()
+    app = soup.find('div', {'id': 'app'})
+    car_urls = []
+    for a in app.find_all('a', {'class': 'Link OfferThumb'}):
+        car_urls.append(a['href'])
+        print(car_urls)
     return 'Homepage'
 
 #получает все автомобили с заданными параметрами
 @app.route('/getCarsByParams', methods=['GET', 'POST'])
-def get_cars_by_params():
-    r = session.get(request.json.get("url"))
+async def get_cars_by_params():
+    data = await request.json()
+    url = data["url"]
+    r = session.get(url).result()
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
@@ -47,9 +45,10 @@ def get_cars_by_params():
 
 #получает данные о автомобиле в зависимости от того какой он, новый или подержаный
 @app.route('/getCarByUrl', methods=['GET', 'POST'])
-def getCarByUrl():
-    url = request.json.get('url')
-    r = session.get(url)
+async def getCarByUrl():
+    data = await request.json()
+    url = data["url"]
+    r = session.get(url).result()
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
@@ -137,9 +136,10 @@ def getCarByUrl():
 
 #получает число автомобилей с заданными параметрами
 @app.route('/getNotUpdate', methods=['GET', 'POST'])
-def getNotUpdate():
-    url = request.json.get("url")
-    r = session.get(url)
+async def getNotUpdate():
+    data = await request.json()
+    url = data["url"]
+    r = session.get(url).result()
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
@@ -159,9 +159,10 @@ def modifyCarDesc(desc):
 
 #получает данные о карточке по ссылке
 @app.route('/getCardByUrl', methods=['GET', 'POST'])
-def getCardByUrl():
-    url = request.json.get("url")
-    r = session.get(url)
+async def getCardByUrl(): 
+    data = await request.json()
+    url = data["url"]
+    r = session.get(url).result()
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
@@ -220,8 +221,10 @@ def getCardByUrl():
 
 #получает все характеристики автомобиля и преобразовавывает их в JSON
 @app.route('/getCharsByUrl', methods=['GET', 'POST'])
-def getCarCharsByUrl():
-    r = session.get(request.json.get('url'))
+async def getCarCharsByUrl():
+    data = await request.json()
+    url = data["url"]
+    r = session.get(url).result()
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
@@ -232,4 +235,4 @@ def getCarCharsByUrl():
 
 
 if __name__ == '__main__':
-    app.run(threaded=True, host='0.0.0.0')
+    app.run(host='0.0.0.0')
