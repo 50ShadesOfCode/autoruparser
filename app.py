@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup #библиотека парсера
 from requests_futures.sessions import FuturesSession
 from quart import Quart, request, jsonify
-from quart.wrappers import Response
 from quart_cors import cors
 import lxml
 import cchardet
@@ -10,7 +9,6 @@ import logging
 app = Quart(__name__)
 app = cors(app, allow_origin="*")
 
-logging.getLogger('flask_cors').level = logging.DEBUG
 #app.wsgi_app = ProfilerMiddleware(app.wsgi_app, profile_dir='./profile')
 
 session = FuturesSession()
