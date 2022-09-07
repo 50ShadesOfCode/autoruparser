@@ -29,7 +29,7 @@ async def home():
 #получает все автомобили с заданными параметрами
 @app.route('/getCarsByParams', methods=['GET', 'POST'])
 async def get_cars_by_params():
-    data = await request.json()
+    data = await request.get_json()
     url = data["url"]
     r = session.get(url).result()
     r.encoding = 'utf-8'
@@ -44,7 +44,7 @@ async def get_cars_by_params():
 #получает данные о автомобиле в зависимости от того какой он, новый или подержаный
 @app.route('/getCarByUrl', methods=['GET', 'POST'])
 async def getCarByUrl():
-    data = await request.json()
+    data = await request.get_json()
     url = data["url"]
     r = session.get(url).result()
     r.encoding = 'utf-8'
@@ -135,7 +135,7 @@ async def getCarByUrl():
 #получает число автомобилей с заданными параметрами
 @app.route('/getNotUpdate', methods=['GET', 'POST'])
 async def getNotUpdate():
-    data = await request.json()
+    data = await request.get_json()
     url = data["url"]
     r = session.get(url).result()
     r.encoding = 'utf-8'
@@ -158,7 +158,7 @@ def modifyCarDesc(desc):
 #получает данные о карточке по ссылке
 @app.route('/getCardByUrl', methods=['GET', 'POST'])
 async def getCardByUrl(): 
-    data = await request.json()
+    data = await request.get_json()
     url = data["url"]
     r = session.get(url).result()
     r.encoding = 'utf-8'
@@ -220,7 +220,7 @@ async def getCardByUrl():
 #получает все характеристики автомобиля и преобразовавывает их в JSON
 @app.route('/getCharsByUrl', methods=['GET', 'POST'])
 async def getCarCharsByUrl():
-    data = await request.json()
+    data = await request.get_json()
     url = data["url"]
     r = session.get(url).result()
     r.encoding = 'utf-8'
