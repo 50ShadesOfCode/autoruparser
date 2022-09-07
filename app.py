@@ -1,32 +1,18 @@
-from bs4 import BeautifulSoup #библиотека парсера
-from requests_futures.sessions import FuturesSession
-from quart import Quart, request, jsonify
-from quart_cors import cors
-import lxml
-import cchardet
-import logging
+from bs4 import BeautifulSoup #library used for parsing
+from requests_futures.sessions import FuturesSession #async requests
+from quart import Quart, request, jsonify #async web microframework
+from quart_cors import cors #cross-origin resource sharing
+import lxml #lxml parser for html
+import cchardet #faster encoding detection
 
+#quart application with cors
 app = Quart(__name__)
 app = cors(app, allow_origin="*")
 
-#app.wsgi_app = ProfilerMiddleware(app.wsgi_app, profile_dir='./profile')
-
+#session for faster requests to auto.ru
 session = FuturesSession()
 
-@app.route('/', methods=['GET'])
-async def home():
-    r = session.get('https://auto.ru/cars/bmw/all/').result()
-    r.encoding = 'utf-8'
-    soup = BeautifulSoup(r.text, 'lxml')
-    soup.prettify()
-    app = soup.find('div', {'id': 'app'})
-    car_urls = []
-    for a in app.find_all('a', {'class': 'Link OfferThumb'}):
-        car_urls.append(a['href'])
-        print(car_urls)
-    return 'Homepage'
-
-#получает все автомобили с заданными параметрами
+#get list of car links by given params
 @app.route('/getCarsByParams', methods=['GET', 'POST'])
 async def get_cars_by_params():
     data = await request.get_json()
@@ -41,7 +27,7 @@ async def get_cars_by_params():
         car_urls.append(a['href'])
     return jsonify({"urls": car_urls})
 
-#получает данные о автомобиле в зависимости от того какой он, новый или подержаный
+#get information about car if it is used or new
 @app.route('/getCarByUrl', methods=['GET', 'POST'])
 async def getCarByUrl():
     data = await request.get_json()
@@ -132,7 +118,7 @@ async def getCarByUrl():
             "desc":carDescription
         })
 
-#получает число автомобилей с заданными параметрами
+#get amount of cars available on the website using given params(it is used for notifications)
 @app.route('/getNotUpdate', methods=['GET', 'POST'])
 async def getNotUpdate():
     data = await request.get_json()
@@ -147,7 +133,7 @@ async def getNotUpdate():
     else:
         return t.text.replace(u'\xa0', ' ')
 
-#убирает из описания теги
+#parsing not always removes all tags so we need to remove them manually
 def modifyCarDesc(desc):
     desc = desc.replace('<span>', '')
     desc = desc.replace('</span>', '')
@@ -155,69 +141,7 @@ def modifyCarDesc(desc):
     desc = desc.replace('_', '')
     return desc
 
-#получает данные о карточке по ссылке
-@app.route('/getCardByUrl', methods=['GET', 'POST'])
-async def getCardByUrl(): 
-    data = await request.get_json()
-    url = data["url"]
-    r = session.get(url).result()
-    r.encoding = 'utf-8'
-    soup = BeautifulSoup(r.text, 'lxml')
-    soup.prettify()
-    name = soup.find('h1', {'class': 'CardHead__title'})
-    carName = "Нет названия"
-    if name != None:
-        carName = name.text.replace(u'\xa0', ' ')
-    price = soup.find('span', {'class': 'OfferPriceCaption__price'})
-    carPrice = "Нет цены"
-    if price != None:
-        carPrice = price.text.replace(u'\xa0', ' ')
-    carEngine = soup.find('li', {'class': 'CardInfoRow_engine'}).find(
-        'div').text.replace(u'\xa0', ' ')
-    carTransmission = soup.find('li', {'class': 'CardInfoRow_transmission'}).find_all(
-        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-    carColor = soup.find('li', {'class': 'CardInfoRow_color'}).find_all(
-        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-    carDrive = soup.find('li', {'class': 'CardInfoRow_drive'}).find_all(
-        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-    carBody = soup.find('li', {'class': 'CardInfoRow_bodytype'}).find_all(
-        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-    images = soup.find_all('img', {'class': 'ImageGalleryDesktop__image'})
-    image_urls = []
-    for image in images:
-        tmp = image['src']
-        image_urls.append(tmp[2:])
-    if str(url).find("/new/") == -1:
-        carKmage = soup.find('div', {'class':'CardOfferBody__leftColumn'}).find('li', {'class': 'CardInfoRow CardInfoRow_kmAge'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-        return jsonify({
-            "name":carName,
-            "kmage": carKmage,
-            "engine": carEngine,
-            "transmission": carTransmission,
-            "color": carColor,
-            "drive": carDrive,
-            "body": carBody,
-            "name":carName,
-            "price":carPrice,
-            "images_urls": image_urls,
-        })
-    else:
-        carComplectation = soup.find('li', {'class': 'CardInfoGrouped__row_complectation_name'}).find(
-            'div', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')
-        return jsonify({
-            "name":carName,
-            "engine": carEngine,
-            "price":carPrice,
-            "transmission": carTransmission,
-            "color": carColor,
-            "drive": carDrive,
-            "body": carBody,
-            "images_urls": image_urls,
-            "complectation": carComplectation,
-        })
-
-#получает все характеристики автомобиля и преобразовавывает их в JSON
+#get car characteristics
 @app.route('/getCharsByUrl', methods=['GET', 'POST'])
 async def getCarCharsByUrl():
     data = await request.get_json()
