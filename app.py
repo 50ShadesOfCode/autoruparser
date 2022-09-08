@@ -36,7 +36,7 @@ async def getCarByUrl():
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'lxml')
     soup.prettify()
-    name = soup.find('div', {'class': 'CardSidebarActions__title'})
+    name = soup.find('h1', {'class': 'CardHead__title'})
     carName = "Нет названия"
     if name != None:
         carName = name.text.replace(u'\xa0', ' ')
