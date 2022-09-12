@@ -49,72 +49,36 @@ async def getCarByUrl():
     if price != None:
         carPrice = price.text.replace(u'\xa0', ' ')
     carDescription = modifyCarDesc(carDescription)
-    body = soup.find('li', {'class': 'CardInfoRow_bodytype'}).find_all(
-        'span', {'class': 'CardInfoRow__cell'})[1]
-    carBody = "Нет информации"
-    if body != None:
-        carBody = body.text.replace(u'\xa0', ' ')
-    engine = soup.find('li', {'class': 'CardInfoRow_engine'}).find(
-        'div')
-    carEngine = "Нет информации"
-    if engine != None:
-        carEngine = engine.text.replace(u'\xa0', ' ')
-    transmission = soup.find('li', {'class': 'CardInfoRow_transmission'}).find_all(
-        'span', {'class': 'CardInfoRow__cell'})[1]
-    carTransmission = "Нет информации"
-    if transmission != None:
-        carTransmission = transmission.text.replace(u'\xa0', ' ')
-    color = soup.find('li', {'class': 'CardInfoRow_color'}).find_all(
-        'span', {'class': 'CardInfoRow__cell'})[1]
-    carColor = "Нет информации"
-    if color != None:
-        carColor = color.text.replace(u'\xa0', ' ')
-    drive = soup.find('li', {'class': 'CardInfoRow_drive'}).find_all(
+    carBody = soup.find('li', {'class': 'CardInfoRow_bodytype'}).find_all(
         'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
-    carDrive = "Нет информации"
-    if drive != None:
-        carDrive = drive.text.replace(u'\xa0', ' ')
+    carEngine = soup.find('li', {'class': 'CardInfoRow_engine'}).find(
+        'div').text.replace(u'\xa0', ' ')
+    carTransmission = soup.find('li', {'class': 'CardInfoRow_transmission'}).find_all(
+        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+    carColor = soup.find('li', {'class': 'CardInfoRow_color'}).find_all(
+        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+    carDrive = soup.find('li', {'class': 'CardInfoRow_drive'}).find_all(
+        'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
     images = soup.find_all('img', {'class': 'ImageGalleryDesktop__image'})
     image_urls = []
     for image in images:
         tmp = "http:" + image['src']
         image_urls.append(tmp)
-    if str(url).find("/new/") == -1:
-        carYear = "Нет информации"
-        year = soup.find('li', {'class': 'CardInfoRow_year'}).find(
-            'a', {'class': 'Link'})
-        if year != None:
-            carYear = year.text
-        carKmage = "Нет информации"
-        kmage = soup.find('li', {'class': 'CardInfoRow_kmAge'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1]
-        if kmage != None:
-            carKmage = kmage.text.replace(u'\xa0', ' ')
-        carWheel = "Нет информации"
-        wheel = soup.find('li', {'class': 'CardInfoRow_wheel'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1]
-        if wheel != None:
-            carWheel = wheel.text.replace(u'\xa0', ' ')
-        carState = "Нет информации"
-        state = soup.find('li', {'class': 'CardInfoRow_state'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1]
-        if state != None:
-            carState = state.text.replace(u'\xa0', ' ')
-        carOwners = "Нет информации"
-        owners = soup.find('li', {'class': 'CardInfoRow_ownersCount'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1]
-        if owners != None:
-            carOwners = owners.text.replace(u'\xa0', ' ')
-        carPts = "Нет информации"
-        pts = soup.find('li', {'class': 'CardInfoRow_pts'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1]
-        if pts != None:
-            carPts = pts.text.replace(u'\xa0', ' ')
-        carCustoms = "Нет информации"
-        customs = soup.find('li', {'class': 'CardInfoRow_customs'}).find_all(
-            'span', {'class': 'CardInfoRow__cell'})[1]
-        if customs != None:
-            carCustoms = customs.text.replace(u'\xa0', ' ')
+    if str(url).find("/new/") == -1: 
+        carYear = soup.find('li', {'class': 'CardInfoRow_year'}).find(
+            'a', {'class': 'Link'}).text
+        carKmage = soup.find('li', {'class': 'CardInfoRow_kmAge'}).find_all(
+            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+        carWheel = soup.find('li', {'class': 'CardInfoRow_wheel'}).find_all(
+            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+        carState = soup.find('li', {'class': 'CardInfoRow_state'}).find_all(
+            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+        carOwners = soup.find('li', {'class': 'CardInfoRow_ownersCount'}).find_all(
+            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+        carPts = soup.find('li', {'class': 'CardInfoRow_pts'}).find_all(
+            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
+        carCustoms = soup.find('li', {'class': 'CardInfoRow_customs'}).find_all(
+            'span', {'class': 'CardInfoRow__cell'})[1].text.replace(u'\xa0', ' ')
         return jsonify({
             "name":carName,
             "price":carPrice,
@@ -135,16 +99,10 @@ async def getCarByUrl():
             "chars":charsUrl,
         })
     else:
-        complectation = soup.find('li', {'class': 'CardInfoGrouped__row_complectation_name'}).find(
-            'div', {'class': 'CardInfoGrouped__cellValue'})
-        carComplectation = "Нет информации"
-        if complectation != None:
-            carComplectation = complectation.text.replace(u'\xa0', ' ')
-        tax = soup.find('li', {'class': 'CardInfoGrouped__row_transportTax'}).find(
-            'div', {'class': 'CardInfoGrouped__cellValue'})
-        carTax = "Нет информации"
-        if tax != None:
-            carTax = tax.text.replace(u'\xa0', ' ')
+        carComplectation = soup.find('li', {'class': 'CardInfoGrouped__row_complectation_name'}).find(
+            'div', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')
+        carTax = soup.find('li', {'class': 'CardInfoGrouped__row_transportTax'}).find(
+            'div', {'class': 'CardInfoGrouped__cellValue'}).text.replace(u'\xa0', ' ')
         return jsonify({
             "name": carName,
             "price":carPrice,
